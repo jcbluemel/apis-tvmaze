@@ -81,7 +81,8 @@ $showsList.on('click', '.Show-getEpisodes', async function (evt) {
   let showID = $(evt.target).closest('.Show').attr('data-show-id');
   // console.log(showID);
   // console.log(evt.target, 'clicked');
-  let test = await getEpisodesOfShow(Number(showID));
+  const episodes = await getEpisodesOfShow(Number(showID));
+  populateEpisodes(episodes);
 });
 
 
@@ -102,8 +103,35 @@ async function getEpisodesOfShow(id) {
   });
 }
 
-
-
 /** Write a clear docstring for this function... */
 
-// function populateEpisodes(episodes) { }
+function populateEpisodes(episodes) {
+  $episodesArea.empty();
+  $episodesArea.show();
+  for (let episode of episodes) {
+    const $episode = $(
+      `<li data-episode-id=${episode.id}>
+        ${episode.name} (season ${episode.season}, episode ${episode.number})
+      </li>`
+    );
+    // const $episode = $(
+    //   `<div data-show-id="${show.id}" class="Show col-md-12 col-lg-6 mb-4">
+    //      <div class="media">
+    //        <img
+    //           src=${show.image}
+    //           alt=${show.name}
+    //           class="w-25 me-3">
+    //        <div class="media-body">
+    //          <h5 class="text-primary">${show.name}</h5>
+    //          <div><small>${show.summary}</small></div>
+    //          <button class="btn btn-outline-light btn-sm Show-getEpisodes">
+    //            Episodes
+    //          </button>
+    //        </div>
+    //      </div>
+    //    </div>
+    //   `);
+
+    $episodesArea.append($episode);
+  }
+}
