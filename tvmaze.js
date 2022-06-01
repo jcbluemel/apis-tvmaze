@@ -16,6 +16,7 @@ const TVMAZE_BASE_URL = "http://api.tvmaze.com";
 async function getShowsByTerm(term) {
   const response = await axios.get(`${TVMAZE_BASE_URL}/search/shows`,
     { params: { "q": term } });
+  console.log(response.data.map(show => show.show));
   return response.data.map(show => show.show);
 }
 
@@ -26,11 +27,14 @@ function populateShows(shows) {
   $showsList.empty();
 
   for (let show of shows) {
+    let image = show.image.medium !== null
+      ? show.image.medium
+      : 'https://tinyurl.com/tv-missing';
     const $show = $(
       `<div data-show-id="${show.id}" class="Show col-md-12 col-lg-6 mb-4">
          <div class="media">
            <img
-              src="http://static.tvmaze.com/uploads/images/medium_portrait/160/401704.jpg"
+              src=${image}
               alt="Bletchly Circle San Francisco"
               class="w-25 me-3">
            <div class="media-body">
