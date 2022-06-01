@@ -2,6 +2,7 @@
 
 const $showsList = $("#showsList");
 const $episodesArea = $("#episodesArea");
+const $episodeList = $('#episodesList');
 const $searchForm = $("#searchForm");
 const TVMAZE_BASE_URL = "http://api.tvmaze.com";
 const NO_IMG_URL = 'https://tinyurl.com/tv-missing';
@@ -16,7 +17,6 @@ const NO_IMG_URL = 'https://tinyurl.com/tv-missing';
 async function getShowsByTerm(term) {
   const response = await axios.get(`${TVMAZE_BASE_URL}/search/shows`,
     { params: { "q": term } });
-  // console.log(response.data.map(show => show.show));
   return response.data.map(showAndScore => {
     const show = showAndScore.show;
     let image = show.image !== null ? show.image.medium : NO_IMG_URL;
@@ -51,7 +51,6 @@ function populateShows(shows) {
          </div>
        </div>
       `);
-    console.log(show.name, show.id);
 
     $showsList.append($show);
   }
@@ -75,24 +74,12 @@ $searchForm.on("submit", async function (evt) {
   await searchForShowAndDisplay();
 });
 
-
-
-$showsList.on('click', '.Show-getEpisodes', async function (evt) {
-  let showID = $(evt.target).closest('.Show').attr('data-show-id');
-  // console.log(showID);
-  // console.log(evt.target, 'clicked');
-  const episodes = await getEpisodesOfShow(Number(showID));
-  populateEpisodes(episodes);
-});
-
-
 /** Given a show ID, get from API and return (promise) array of episodes:
  *      { id, name, season, number }
  */
 
 async function getEpisodesOfShow(id) {
   const response = await axios.get(`${TVMAZE_BASE_URL}/shows/${id}/episodes`);
-  // console.log(response.data);
   return response.data.map(episode => {
     return {
       "id": episode.id,
@@ -103,35 +90,35 @@ async function getEpisodesOfShow(id) {
   });
 }
 
-/** Write a clear docstring for this function... */
+/** takes in an array of episodes and adds them to episods area
+ * in an unordered list
+ */
 
 function populateEpisodes(episodes) {
-  $episodesArea.empty();
-  $episodesArea.show();
+  $episodeList.empty();
   for (let episode of episodes) {
     const $episode = $(
       `<li data-episode-id=${episode.id}>
         ${episode.name} (season ${episode.season}, episode ${episode.number})
       </li>`
     );
-    // const $episode = $(
-    //   `<div data-show-id="${show.id}" class="Show col-md-12 col-lg-6 mb-4">
-    //      <div class="media">
-    //        <img
-    //           src=${show.image}
-    //           alt=${show.name}
-    //           class="w-25 me-3">
-    //        <div class="media-body">
-    //          <h5 class="text-primary">${show.name}</h5>
-    //          <div><small>${show.summary}</small></div>
-    //          <button class="btn btn-outline-light btn-sm Show-getEpisodes">
-    //            Episodes
-    //          </button>
-    //        </div>
-    //      </div>
-    //    </div>
-    //   `);
-
-    $episodesArea.append($episode);
+    $episodeList.append($episode);
   }
 }
+
+/**uses get episode function and populate episode function
+ * to get a show ID and display the episode on the bottom of the page
+ */
+async function searchForEpisodesAndDisplay(id) {
+  const episodes = await getEpisodesOfShow(id);
+  $episodesArea.show();
+  populateEpisodes(episodes);
+}
+
+/** adds on to all episode buttons in show area, grabs show id from
+ * target show and executes searchForEpisodesAndDisplay func */
+
+$showsList.on('click', '.Show-getEpisodes', async function (evt) {
+  let showID = $(evt.target).closest('.Show').attr('data-show-id');
+  await searchForEpisodesAndDisplay(Number(showID));
+});
