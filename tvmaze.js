@@ -4,6 +4,7 @@ const $showsList = $("#showsList");
 const $episodesArea = $("#episodesArea");
 const $searchForm = $("#searchForm");
 const TVMAZE_BASE_URL = "http://api.tvmaze.com";
+const noImgUrl = 'https://tinyurl.com/tv-missing';
 
 
 /** Given a search term, search for tv shows that match that query.
@@ -18,15 +19,26 @@ async function getShowsByTerm(term) {
     { params: { "q": term } });
   // console.log(response.data.map(show => show.show));
   let fullShowsResults = response.data.map(show => show.show);
-  let desiredKeys = ['id', 'name', 'summary', 'image'];
-  for (let show of fullShowsResults) {
-    for (let key in show) {
-      if (!desiredKeys.includes(key)) {
-        delete show[key];
-      }
-    }
-  }
-  return fullShowsResults;
+  return fullShowsResults.map(show => {
+    let image = show.image !== null ? show.image.medium : noImgUrl;
+    return {
+      "id": show.id,
+      "name": show.name,
+      "summary": show.summary,
+      "image": image
+    };
+  });
+
+
+  /*  let desiredKeys = ['id', 'name', 'summary', 'image'];
+   for (let show of fullShowsResults) {
+     for (let key in show) {
+       if (!desiredKeys.includes(key)) {
+         delete show[key];
+       }
+     }
+   }
+   return fullShowsResults; */
 
   // console.log(fullShowsResults.map(({show:id, show:name, show:summary, show:image}) => )
   // );
@@ -39,16 +51,14 @@ async function getShowsByTerm(term) {
 
 function populateShows(shows) {
   $showsList.empty();
+  console.log(shows);
 
   for (let show of shows) {
-    let image = show.image.medium !== null
-      ? show.image.medium
-      : 'https://tinyurl.com/tv-missing';
     const $show = $(
       `<div data-show-id="${show.id}" class="Show col-md-12 col-lg-6 mb-4">
          <div class="media">
            <img
-              src=${image}
+              src=${show.image}
               alt="Bletchly Circle San Francisco"
               class="w-25 me-3">
            <div class="media-body">
