@@ -4,8 +4,7 @@ const $showsList = $("#showsList");
 const $episodesArea = $("#episodesArea");
 const $searchForm = $("#searchForm");
 const TVMAZE_BASE_URL = "http://api.tvmaze.com";
-const noImgUrl = 'https://tinyurl.com/tv-missing';
-
+const NO_IMG_URL = 'https://tinyurl.com/tv-missing';
 
 /** Given a search term, search for tv shows that match that query.
  *
@@ -18,9 +17,9 @@ async function getShowsByTerm(term) {
   const response = await axios.get(`${TVMAZE_BASE_URL}/search/shows`,
     { params: { "q": term } });
   // console.log(response.data.map(show => show.show));
-  let fullShowsResults = response.data.map(show => show.show);
-  return fullShowsResults.map(show => {
-    let image = show.image !== null ? show.image.medium : noImgUrl;
+  return response.data.map(showAndScore => {
+    const show = showAndScore.show;
+    let image = show.image !== null ? show.image.medium : NO_IMG_URL;
     return {
       "id": show.id,
       "name": show.name,
@@ -28,38 +27,19 @@ async function getShowsByTerm(term) {
       "image": image
     };
   });
-
-
-  /*  let desiredKeys = ['id', 'name', 'summary', 'image'];
-   for (let show of fullShowsResults) {
-     for (let key in show) {
-       if (!desiredKeys.includes(key)) {
-         delete show[key];
-       }
-     }
-   }
-   return fullShowsResults; */
-
-  // console.log(fullShowsResults.map(({show:id, show:name, show:summary, show:image}) => )
-  // );
-
-  // let {id, name, summary, image} = fullShowsResults;
 }
-
 
 /** Given list of shows, create markup for each and to DOM */
 
 function populateShows(shows) {
   $showsList.empty();
-  console.log(shows);
-
   for (let show of shows) {
     const $show = $(
       `<div data-show-id="${show.id}" class="Show col-md-12 col-lg-6 mb-4">
          <div class="media">
            <img
               src=${show.image}
-              alt="Bletchly Circle San Francisco"
+              alt=${show.name}
               class="w-25 me-3">
            <div class="media-body">
              <h5 class="text-primary">${show.name}</h5>
