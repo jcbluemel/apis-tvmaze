@@ -51,7 +51,7 @@ function populateShows(shows) {
          </div>
        </div>
       `);
-      console.log(show.name, show.id);
+    console.log(show.name, show.id);
 
     $showsList.append($show);
   }
@@ -75,22 +75,32 @@ $searchForm.on("submit", async function (evt) {
   await searchForShowAndDisplay();
 });
 
-//evt prevent default?
-$showsList.on('click', '.Show-getEpisodes', function(evt){
+
+
+$showsList.on('click', '.Show-getEpisodes', async function (evt) {
   let showID = $(evt.target).closest('.Show').attr('data-show-id');
-  console.log(showID);
-  console.log(evt.target, 'clicked');
- // await getEpisodesOfShow(Number(showID))
-})
+  // console.log(showID);
+  // console.log(evt.target, 'clicked');
+  let test = await getEpisodesOfShow(Number(showID));
+});
+
 
 /** Given a show ID, get from API and return (promise) array of episodes:
  *      { id, name, season, number }
  */
 
 async function getEpisodesOfShow(id) {
-  //const response = await axios.get(`${TVMAZE_BASE_URL}/search/shows`,
-    { params: { "q": term } });
- }
+  const response = await axios.get(`${TVMAZE_BASE_URL}/shows/${id}/episodes`);
+  // console.log(response.data);
+  return response.data.map(episode => {
+    return {
+      "id": episode.id,
+      "name": episode.name,
+      "season": episode.season,
+      "number": episode.number
+    };
+  });
+}
 
 
 
