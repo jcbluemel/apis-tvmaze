@@ -51,6 +51,7 @@ function populateShows(shows) {
          </div>
        </div>
       `);
+      console.log(show.name, show.id);
 
     $showsList.append($show);
   }
@@ -74,12 +75,24 @@ $searchForm.on("submit", async function (evt) {
   await searchForShowAndDisplay();
 });
 
+//evt prevent default?
+$showsList.on('click', '.Show-getEpisodes', function(evt){
+  let showID = $(evt.target).closest('.Show').attr('data-show-id');
+  console.log(showID);
+  console.log(evt.target, 'clicked');
+ // await getEpisodesOfShow(Number(showID))
+})
 
 /** Given a show ID, get from API and return (promise) array of episodes:
  *      { id, name, season, number }
  */
 
-// async function getEpisodesOfShow(id) { }
+async function getEpisodesOfShow(id) {
+  //const response = await axios.get(`${TVMAZE_BASE_URL}/search/shows`,
+    { params: { "q": term } });
+ }
+
+
 
 /** Write a clear docstring for this function... */
 
