@@ -16,11 +16,22 @@ const TVMAZE_BASE_URL = "http://api.tvmaze.com";
 async function getShowsByTerm(term) {
   const response = await axios.get(`${TVMAZE_BASE_URL}/search/shows`,
     { params: { "q": term } });
-  console.log(response.data.map(show => show.show));
+  // console.log(response.data.map(show => show.show));
   let fullShowsResults = response.data.map(show => show.show);
-  console.log(fullShowsResults.map(({show:id, show:name, show:summary, show:image}) => )
-  );
-  let {id, name, summary, image} = fullShowsResults;
+  let desiredKeys = ['id', 'name', 'summary', 'image'];
+  for (let show of fullShowsResults) {
+    for (let key in show) {
+      if (!desiredKeys.includes(key)) {
+        delete show[key];
+      }
+    }
+  }
+  return fullShowsResults;
+
+  // console.log(fullShowsResults.map(({show:id, show:name, show:summary, show:image}) => )
+  // );
+
+  // let {id, name, summary, image} = fullShowsResults;
 }
 
 
