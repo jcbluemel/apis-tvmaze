@@ -17,7 +17,10 @@ async function getShowsByTerm(term) {
   const response = await axios.get(`${TVMAZE_BASE_URL}/search/shows`,
     { params: { "q": term } });
   console.log(response.data.map(show => show.show));
-  return response.data.map(show => show.show);
+  let fullShowsResults = response.data.map(show => show.show);
+  console.log(fullShowsResults.map(({show:id, show:name, show:summary, show:image}) => )
+  );
+  let {id, name, summary, image} = fullShowsResults;
 }
 
 
