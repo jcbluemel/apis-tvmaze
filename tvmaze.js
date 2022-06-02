@@ -119,6 +119,7 @@ async function searchForEpisodesAndDisplay(id) {
  * target show and executes searchForEpisodesAndDisplay func */
 
 $showsList.on('click', '.Show-getEpisodes', async function (evt) {
-  let showID = $(evt.target).closest('.Show').attr('data-show-id');
+  const showID = $(evt.target).closest('.Show').attr('data-show-id');
   await searchForEpisodesAndDisplay(Number(showID));
 });
+
